@@ -1,0 +1,575 @@
+<!-- Chosen Palette: Warm Neutral Harmony with Vibrant Accents (Stone/Sand base with Violet, Cyan, and Amber accents) -->
+
+<!-- Application Structure Plan:
+The SPA is structured around the "Strategic Bridge" concept from the source report.
+1. **Hero/Narrative Section**: Uses the poem ("Three stars rise...") to establish the brand voice and the "Mirror/Compass" metaphor.
+2. **The Strategic Compass (Navigation)**: A central interactive dashboard element acting as the main navigation. It places "MEA GAMES" in the center, bridging "Meta Ethics Academy" and "Mission Equity Alliance". This mirrors the "Impact Bridge" diagram in the PDF.
+3. **Dynamic Detail View**: A content area that updates based on the user's selection in the Compass. This allows deep dives into the Academy (Simulation/Research) and the Alliance (Real-world Impact/Support) without overwhelming the user.
+4. **Data Visualization Layer**: Integrates Chart.js to visualize the abstract concepts:
+- "Simulation Metrics" for the Academy (Radar Chart for attributes like Bias, Hierarchy, Ethics).
+- "Impact Distribution" for the Alliance (Doughnut/Bar for Resources, Advocacy, Community).
+5. **Synthesis/Footer**: Recaps the "Organizational Mirror" concept.
+
+```
+Why this structure? The report emphasizes the connection between two distinct entities via a central game. A static scroll wouldn&#39;t capture this &quot;bridge&quot; dynamic. The interactive &quot;Compass&quot; forces the user to see the centrality of the Game before exploring the two pillars.
+
+```
+
+-->
+
+<!-- Visualization & Content Choices:
+1. **Narrative Text**: Presented as a "Manifesto" with fade-in effects to emphasize the poetic nature of the source.
+2. **The Bridge Diagram**: HTML/CSS Grid layout (NO SVG) using CSS borders and Unicode icons to represent the flow from Game -> Academy/Alliance.
+3. **Academy Visualization**: Radar Chart (Chart.js). Justification: The Academy deals with multi-dimensional abstract concepts (Bias, Hierarchy, Loyalty). A radar chart effectively shows the "shape" of these simulations.
+4. **Alliance Visualization**: Bar Chart (Chart.js). Justification: The Alliance deals with tangible, comparative metrics (Resource Access, Workshops, Eligibility). A bar chart provides clarity and direct comparison.
+5. **Projected Growth**: Line Chart (Chart.js). Shows the theoretical trajectory of "Impact" over time as the two pillars synergize.
+6. **Icons**: Unicode characters (âï¸, ð§ , ð§­) styled with CSS to avoid SVG/images while maintaining visual engagement.
+-->
+
+<!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MEA Games: The Strategic Bridge</title>
+<script src="[https://cdn.tailwindcss.com](https://www.google.com/search?q=https://cdn.tailwindcss.com)"></script>
+<script src="[https://cdn.jsdelivr.net/npm/chart.js](https://www.google.com/search?q=https://cdn.jsdelivr.net/npm/chart.js)"></script>
+<link href="[https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;600;800&display=swap](https://www.google.com/search?q=https://fonts.googleapis.com/css2%3Ffamily%3DPlayfair%2BDisplay:ital,wght%400,400%3B0,700%3B1,400%26family%3DInter:wght%40300%3B400%3B600%3B800%26display%3Dswap)" rel="stylesheet">
+<style>
+/* Custom Font Assignments */
+.font-serif { font-family: 'Playfair Display', serif; }
+.font-sans { font-family: 'Inter', sans-serif; }
+
+```
+    /* Chart Container Styling - MANDATORY */
+    .chart-container {
+        position: relative;
+        width: 100%;
+        max-width: 600px; /* Tailwind max-w-xl approx */
+        margin-left: auto;
+        margin-right: auto;
+        height: 300px;
+        max-height: 400px;
+    }
+    @media (min-width: 768px) {
+        .chart-container {
+            height: 350px;
+        }
+    }
+
+    /* Custom Utilities */
+    .glass-panel {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+    }
+    
+    .compass-needle {
+        transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Animation Classes */
+    .fade-in {
+        opacity: 0;
+        animation: fadeIn 1s ease-out forwards;
+    }
+    .delay-200 { animation-delay: 0.2s; }
+    .delay-500 { animation-delay: 0.5s; }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Interactive Card States */
+    .interactive-card {
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    .interactive-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    }
+    .active-card {
+        border-color: #f59e0b; /* Amber-500 */
+        background-color: #fffbeb; /* Amber-50 */
+        transform: scale(1.02);
+    }
+    
+    /* Unicode Icon Styling */
+    .icon-lg {
+        font-size: 2.5rem;
+        line-height: 1;
+    }
+</style>
+
+```
+
+</head>
+<body class="bg-stone-50 text-stone-800 font-sans antialiased selection:bg-amber-200 selection:text-amber-900">
+
+```
+<!-- Navigation -->
+<nav class="fixed top-0 w-full z-50 glass-panel border-b border-stone-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16 items-center">
+            <div class="flex items-center space-x-2">
+                <span class="text-2xl">ð§­</span>
+                <span class="font-bold text-xl tracking-tight text-stone-900">MEA<span class="text-amber-600">GAMES</span></span>
+            </div>
+            <div class="hidden md:flex space-x-8 text-sm font-medium text-stone-600">
+                <a href="#narrative" class="hover:text-amber-600 transition-colors">Manifesto</a>
+                <a href="#bridge" class="hover:text-amber-600 transition-colors">The Bridge</a>
+                <a href="#data" class="hover:text-amber-600 transition-colors">Data Analysis</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Hero / Narrative Section -->
+<section id="narrative" class="pt-32 pb-20 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto text-center">
+    <div class="fade-in">
+        <h1 class="text-4xl md:text-6xl font-extrabold text-stone-900 mb-6 font-serif">
+            Turn Play... Into Progress
+        </h1>
+        <p class="text-lg md:text-xl text-stone-600 max-w-3xl mx-auto mb-12 italic font-serif leading-relaxed">
+            "Three stars rise... potential forged in fire.<br>
+            A bridge of perception, where lies meet truth.<br>
+            A compass of direction, when you seek it the most.<br>
+            My purpose is your purpose, and yours is mine."
+        </p>
+        <div class="inline-flex items-center space-x-2 px-4 py-2 bg-white rounded-full shadow-sm border border-stone-200 text-sm font-semibold text-stone-600">
+            <span class="text-amber-500">â</span>
+            <span>Organizational Mirror to Society</span>
+            <span class="text-amber-500">â</span>
+        </div>
+    </div>
+</section>
+
+<!-- The Strategic Compass (Interactive Architecture) -->
+<section id="bridge" class="py-16 bg-stone-100">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-stone-900 mb-4">The Strategic Bridge</h2>
+            <p class="text-stone-600 max-w-2xl mx-auto">
+                Explore how MEA Games acts as the central pivot, connecting abstract ethical simulation with concrete societal impact. Click a pillar to explore.
+            </p>
+        </div>
+
+        <!-- Interactive Architecture Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-12 items-stretch mb-16 relative">
+            
+            <!-- Connector Line (Visual only, CSS) -->
+            <div class="hidden md:block absolute top-1/2 left-0 w-full h-1 bg-gradient-to-r from-violet-200 via-amber-300 to-cyan-200 -z-10 transform -translate-y-1/2 rounded-full"></div>
+
+            <!-- Pillar 1: Meta Ethics Academy -->
+            <div id="card-academy" class="interactive-card bg-white rounded-xl p-8 border-t-4 border-violet-600 shadow-sm relative z-10 flex flex-col items-center text-center" onclick="updateView('academy')">
+                <div class="w-16 h-16 bg-violet-100 rounded-full flex items-center justify-center mb-4 text-violet-600 icon-lg">
+                    ð§ 
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Meta Ethics Academy</h3>
+                <p class="text-xs font-semibold text-violet-600 uppercase tracking-wider mb-4">The "Self" Reflection</p>
+                <p class="text-sm text-gray-600 mb-4">Social & Moral Engineering. Simulating societal dynamics to study human nature and biases.</p>
+                <span class="mt-auto text-xs text-stone-400 font-mono">CORE: Research</span>
+            </div>
+
+            <!-- Center: MEA GAMES -->
+            <div id="card-games" class="interactive-card active-card bg-white rounded-xl p-8 border-t-4 border-amber-500 shadow-lg relative z-20 transform scale-105 flex flex-col items-center text-center ring-4 ring-stone-100" onclick="updateView('games')">
+                <div class="w-20 h-20 bg-amber-100 rounded-full flex items-center justify-center mb-4 text-amber-600 icon-lg compass-container">
+                    ð§­
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 mb-2">MEA GAMES</h3>
+                <p class="text-xs font-semibold text-amber-600 uppercase tracking-wider mb-4">The Strategic Bridge</p>
+                <p class="text-sm text-gray-600 mb-4">The "Funnel". Captures engagement through play and directs it toward internal growth or external aid.</p>
+                <span class="mt-auto text-xs text-stone-400 font-mono">CORE: Engagement</span>
+            </div>
+
+            <!-- Pillar 2: Mission Equity Alliance -->
+            <div id="card-alliance" class="interactive-card bg-white rounded-xl p-8 border-t-4 border-cyan-600 shadow-sm relative z-10 flex flex-col items-center text-center" onclick="updateView('alliance')">
+                <div class="w-16 h-16 bg-cyan-100 rounded-full flex items-center justify-center mb-4 text-cyan-600 icon-lg">
+                    ð¡ï¸
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Mission Equity Alliance</h3>
+                <p class="text-xs font-semibold text-cyan-600 uppercase tracking-wider mb-4">The "Society" Reflection</p>
+                <p class="text-sm text-gray-600 mb-4">Second Chance & Entry. Assisting veterans and communities with eligibility and resources.</p>
+                <span class="mt-auto text-xs text-stone-400 font-mono">CORE: Impact</span>
+            </div>
+        </div>
+
+        <!-- Dynamic Detail Section -->
+        <div id="detail-section" class="bg-white rounded-2xl shadow-xl overflow-hidden transition-all duration-500 ease-in-out">
+            <div class="grid grid-cols-1 lg:grid-cols-2">
+                
+                <!-- Content Panel -->
+                <div class="p-8 md:p-12 flex flex-col justify-center">
+                    <div id="detail-header" class="mb-6">
+                        <span id="detail-badge" class="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase bg-amber-100 text-amber-800 mb-3">Strategic Core</span>
+                        <h3 id="detail-title" class="text-3xl font-bold text-stone-900 mb-2">The Mirror & The Compass</h3>
+                    </div>
+                    <div id="detail-content" class="prose prose-stone text-stone-600">
+                        <p>MEA Games serves as the organizational "Mirror to Society." It is not just entertainment; it is a psychological funnel.</p>
+                        <ul class="list-none space-y-2 pl-0 mt-4">
+                            <li class="flex items-start">
+                                <span class="mr-2 text-amber-500">â¤</span>
+                                <span><strong>Attract:</strong> Uses the "Mirror Metaphor" to engage users in self-reflection.</span>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="mr-2 text-amber-500">â¤</span>
+                                <span><strong>Direct:</strong> Acts as a compass, guiding users to either the Academy (Research) or Alliance (Action).</span>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="mr-2 text-amber-500">â¤</span>
+                                <span><strong>Impact:</strong> Turns abstract play into concrete progress for veterans and society.</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Visualization Panel -->
+                <div class="bg-stone-50 p-8 md:p-12 flex items-center justify-center border-l border-stone-100">
+                    <div class="w-full">
+                        <h4 id="chart-title" class="text-center text-sm font-bold text-stone-500 uppercase tracking-widest mb-6">Strategic Flow Projection</h4>
+                        <div class="chart-container">
+                            <canvas id="dynamicChart"></canvas>
+                        </div>
+                        <p id="chart-caption" class="text-center text-xs text-stone-400 mt-4 italic">
+                            Visualizing the interaction between game engagement and societal output.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Deep Dive Data Section -->
+<section id="data" class="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="mb-12 border-b border-stone-200 pb-4">
+        <h2 class="text-3xl font-bold text-stone-900">Comparative Analysis</h2>
+        <p class="text-stone-600">Breakdown of the distinct operational models within the ecosystem.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+        <!-- Academy Data -->
+        <div>
+            <div class="flex items-center mb-6">
+                <div class="w-10 h-10 rounded-full bg-violet-100 flex items-center justify-center text-violet-600 mr-4 font-bold">A</div>
+                <div>
+                    <h3 class="text-xl font-bold text-stone-900">Academy Simulation</h3>
+                    <p class="text-sm text-stone-500">Methodology & Risks</p>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-stone-200">
+                <p class="text-sm text-stone-600 mb-4">
+                    The Academy focuses on <strong class="text-violet-700">Social Engineering</strong>. It uses immersive workshops and role-playing hierarchies to generate data. The chart below balances research activities against potential ethical challenges.
+                </p>
+                <div class="chart-container" style="height: 300px;">
+                    <canvas id="academyChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alliance Data -->
+        <div>
+            <div class="flex items-center mb-6">
+                <div class="w-10 h-10 rounded-full bg-cyan-100 flex items-center justify-center text-cyan-600 mr-4 font-bold">M</div>
+                <div>
+                    <h3 class="text-xl font-bold text-stone-900">Alliance Impact</h3>
+                    <p class="text-sm text-stone-500">Resource Distribution</p>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-stone-200">
+                <p class="text-sm text-stone-600 mb-4">
+                    The Alliance focuses on <strong class="text-cyan-700">Systemic Equity</strong>. It operates as a 501(c)(3) to provide direct advocacy and entry resources. The chart highlights key operational areas.
+                </p>
+                <div class="chart-container" style="height: 300px;">
+                    <canvas id="allianceChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="bg-stone-900 text-stone-400 py-12">
+    <div class="max-w-7xl mx-auto px-4 text-center">
+        <div class="text-3xl mb-4">â</div>
+        <p class="font-serif italic text-lg text-stone-200 mb-8">"My purpose is your purpose, and yours is mine."</p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-sm border-t border-stone-800 pt-8">
+            <div>
+                <h4 class="font-bold text-stone-100 mb-2">Meta Ethics Academy</h4>
+                <p>Simulation & Research</p>
+            </div>
+            <div>
+                <h4 class="font-bold text-amber-500 mb-2">MEA GAMES</h4>
+                <p>The Bridge</p>
+            </div>
+            <div>
+                <h4 class="font-bold text-stone-100 mb-2">Mission Equity Alliance</h4>
+                <p>Advocacy & Resources</p>
+            </div>
+        </div>
+        <p class="mt-12 text-xs text-stone-600">Generated from "Conceptualized.pdf" Analysis.</p>
+    </div>
+</footer>
+
+<!-- Application Logic -->
+<script>
+    // State Management
+    const state = {
+        currentView: 'games',
+        data: {
+            games: {
+                title: "The Mirror & The Compass",
+                badge: "Strategic Core",
+                badgeColor: "bg-amber-100 text-amber-800",
+                content: `
+                    <p>MEA Games serves as the organizational "Mirror to Society." It is not just entertainment; it is a psychological funnel.</p>
+                    <ul class="list-none space-y-3 pl-0 mt-4 text-sm">
+                        <li class="flex items-start"><span class="mr-2 text-amber-500 text-lg">â¤</span><span><strong>Attract:</strong> Uses the "Mirror Metaphor" and narratives like "Three stars rise..." to engage users in self-reflection.</span></li>
+                        <li class="flex items-start"><span class="mr-2 text-amber-500 text-lg">â¤</span><span><strong>Direct:</strong> Acts as a compass, guiding users to either the Academy (Research) or Alliance (Action).</span></li>
+                        <li class="flex items-start"><span class="mr-2 text-amber-500 text-lg">â¤</span><span><strong>Impact:</strong> Turns abstract play into concrete progress for veterans and society.</span></li>
+                    </ul>
+                    <div class="mt-6 p-4 bg-amber-50 border border-amber-100 rounded text-xs text-stone-500">
+                        <strong>Key Mechanism:</strong> The game measures "pressure internalized" and "expelled eruption" to categorize player potential.
+                    </div>
+                `,
+                chartType: 'line',
+                chartTitle: 'Engagement Flow',
+                chartLabel: 'User Volume',
+                chartLabels: ['Awareness', 'Play', 'Reflection', 'Action'],
+                chartData: [100, 85, 60, 40],
+                chartColor: '#f59e0b'
+            },
+            academy: {
+                title: "Meta Ethics Academy",
+                badge: "Pillar One: Internal",
+                badgeColor: "bg-violet-100 text-violet-800",
+                content: `
+                    <p>The Academy simulates societal dynamics to study human nature, biases, and social engineering techniques. It is the theoretical engine of the ecosystem.</p>
+                    <h5 class="font-bold mt-4 mb-2 text-violet-700">Key Activities:</h5>
+                    <ul class="list-none space-y-2 pl-0 text-sm">
+                        <li class="flex items-center"><span class="mr-2">ð¬</span> Immersive Workshops & Role-Playing</li>
+                        <li class="flex items-center"><span class="mr-2">ð</span> Hierarchy Tests & Bias Loops</li>
+                        <li class="flex items-center"><span class="mr-2">ð¤</span> Echo Chamber Simulations</li>
+                    </ul>
+                    <div class="mt-6 p-4 bg-violet-50 border border-violet-100 rounded text-xs text-stone-500">
+                        <strong>Expansion Idea:</strong> VR simulations and university partnerships to publish findings on social nudges.
+                    </div>
+                `,
+                chartType: 'radar',
+                chartTitle: 'Simulation Focus Areas',
+                chartLabel: 'Intensity',
+                chartLabels: ['Hierarchy', 'Bias', 'Loyalty', 'Ethics', 'Consent'],
+                chartData: [90, 85, 75, 95, 80],
+                chartColor: '#7c3aed'
+            },
+            alliance: {
+                title: "Mission Equity Alliance",
+                badge: "Pillar Two: External",
+                badgeColor: "bg-cyan-100 text-cyan-800",
+                content: `
+                    <p>The Alliance provides "Second Chances" and entry resources. It focuses on tangible support for veterans and marginalized communities, translating the Academy's findings into policy.</p>
+                    <h5 class="font-bold mt-4 mb-2 text-cyan-700">Core Services:</h5>
+                    <ul class="list-none space-y-2 pl-0 text-sm">
+                        <li class="flex items-center"><span class="mr-2">ð</span> Eligibility Verification</li>
+                        <li class="flex items-center"><span class="mr-2">ð¤</span> Resource Access & Advocacy</li>
+                        <li class="flex items-center"><span class="mr-2">ðï¸</span> VA/Government Partnerships</li>
+                    </ul>
+                    <div class="mt-6 p-4 bg-cyan-50 border border-cyan-100 rounded text-xs text-stone-500">
+                        <strong>Legal Structure:</strong> 501(c)(3) tax-exempt organization ensuring no private profits.
+                    </div>
+                `,
+                chartType: 'bar',
+                chartTitle: 'Resource Allocation',
+                chartLabel: 'Effort Distribution',
+                chartLabels: ['Advocacy', 'Verification', 'Events', 'Workshops'],
+                chartData: [35, 30, 15, 20],
+                chartColor: '#0891b2'
+            }
+        }
+    };
+
+    // Chart Instances
+    let mainDynamicChart = null;
+    let academyChart = null;
+    let allianceChart = null;
+
+    // Initialization
+    document.addEventListener('DOMContentLoaded', () => {
+        initMainChart();
+        initDeepDiveCharts();
+    });
+
+    // Function to update the view based on selection
+    function updateView(viewName) {
+        state.currentView = viewName;
+        const data = state.data[viewName];
+
+        // Update Cards Styling
+        document.querySelectorAll('.interactive-card').forEach(el => {
+            el.classList.remove('active-card', 'ring-4', 'ring-stone-100', 'transform', 'scale-105');
+            el.classList.add('opacity-75'); // Dim others
+        });
+        const activeCard = document.getElementById(`card-${viewName}`);
+        activeCard.classList.add('active-card', 'ring-4', 'ring-stone-100', 'transform', 'scale-105');
+        activeCard.classList.remove('opacity-75');
+
+        // Update Content Panel with animation
+        const section = document.getElementById('detail-section');
+        section.classList.add('opacity-50', 'scale-95');
+        
+        setTimeout(() => {
+            // Text Updates
+            document.getElementById('detail-title').innerText = data.title;
+            document.getElementById('detail-badge').innerText = data.badge;
+            document.getElementById('detail-badge').className = `inline-block px-3 py-1 rounded-full text-xs font-bold uppercase mb-3 ${data.badgeColor}`;
+            document.getElementById('detail-content').innerHTML = data.content;
+            document.getElementById('chart-title').innerText = data.chartTitle;
+
+            // Chart Update
+            updateMainChart(viewName);
+
+            section.classList.remove('opacity-50', 'scale-95');
+        }, 300);
+    }
+
+    // Main Dynamic Chart Logic (Chart.js)
+    function initMainChart() {
+        const ctx = document.getElementById('dynamicChart').getContext('2d');
+        const initialData = state.data.games;
+
+        mainDynamicChart = new Chart(ctx, {
+            type: initialData.chartType,
+            data: {
+                labels: initialData.chartLabels,
+                datasets: [{
+                    label: initialData.chartLabel,
+                    data: initialData.chartData,
+                    borderColor: initialData.chartColor,
+                    backgroundColor: initialData.chartColor + '33', // Add transparency
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#fff',
+                        titleColor: '#1c1917',
+                        bodyColor: '#57534e',
+                        borderColor: '#e7e5e4',
+                        borderWidth: 1,
+                        callbacks: {
+                            label: function(context) {
+                                return context.parsed.y + (state.currentView === 'games' ? '%' : '');
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { display: true, color: '#f5f5f4' },
+                        ticks: { display: false }
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+    }
+
+    function updateMainChart(viewName) {
+        const data = state.data[viewName];
+        
+        mainDynamicChart.config.type = data.chartType;
+        mainDynamicChart.data.labels = data.chartLabels;
+        mainDynamicChart.data.datasets[0].label = data.chartLabel;
+        mainDynamicChart.data.datasets[0].data = data.chartData;
+        mainDynamicChart.data.datasets[0].borderColor = data.chartColor;
+        mainDynamicChart.data.datasets[0].backgroundColor = data.chartColor + '33';
+        
+        mainDynamicChart.update();
+    }
+
+    // Deep Dive Charts (Static Charts for Bottom Section)
+    function initDeepDiveCharts() {
+        // Academy Radar Chart
+        const ctxAcademy = document.getElementById('academyChart').getContext('2d');
+        academyChart = new Chart(ctxAcademy, {
+            type: 'radar',
+            data: {
+                labels: ['Hierarchy Tests', 'Bias Loops', 'Loyalty Games', 'Ethical Debates', 'Data Collection'],
+                datasets: [{
+                    label: 'Simulation Intensity',
+                    data: [85, 70, 60, 90, 95],
+                    backgroundColor: 'rgba(124, 58, 237, 0.2)', // Violet
+                    borderColor: '#7c3aed',
+                    pointBackgroundColor: '#7c3aed'
+                }, {
+                    label: 'Risk Factor',
+                    data: [60, 80, 50, 20, 70],
+                    backgroundColor: 'rgba(168, 162, 158, 0.2)', // Stone
+                    borderColor: '#a8a29e',
+                    pointBackgroundColor: '#a8a29e',
+                    borderDash: [5, 5]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        angleLines: { color: '#f5f5f4' },
+                        grid: { color: '#f5f5f4' },
+                        pointLabels: { font: { size: 10 } }
+                    }
+                },
+                plugins: {
+                    legend: { position: 'bottom', labels: { boxWidth: 10 } }
+                }
+            }
+        });
+
+        // Alliance Doughnut Chart
+        const ctxAlliance = document.getElementById('allianceChart').getContext('2d');
+        allianceChart = new Chart(ctxAlliance, {
+            type: 'doughnut',
+            data: {
+                labels: ['Eligibility Checks', 'Resource Access', 'Advocacy', 'Workshops'],
+                datasets: [{
+                    data: [40, 30, 20, 10],
+                    backgroundColor: [
+                        '#0891b2', // Cyan-600
+                        '#22d3ee', // Cyan-400
+                        '#67e8f9', // Cyan-300
+                        '#cffafe'  // Cyan-100
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'right', labels: { boxWidth: 10, font: { size: 11 } } }
+                },
+                cutout: '70%'
+            }
+        });
+    }
+</script>
+
+```
+
+</body>
+</html>
